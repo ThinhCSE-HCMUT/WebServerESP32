@@ -1,30 +1,16 @@
-let allData = [];
+async function fetchTable() {
+    try {
+        // Gửi yêu cầu tới endpoint /table của ESP32
+        const response = await fetch("http://10.28.129.143/table");
+        const tableContent = await response.text();
 
-const fetchData = async () => {
-    const response = await fetch("/table", {
-        method: "GET",
-    });
-    if (response.ok) {
-        allData = await response.json();
-        renderTable();
+        // Chèn nội dung nhận được vào phần tử có id "tableBody"
+        document.getElementById("tableBody").innerHTML = tableContent;
+    } catch (error) {
+        console.error("Error fetching table data:", error);
     }
-};
+}
 
-const renderTable = () => {
-    const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = allData
-        .map(
-            (data, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${data.cardID}</td>
-            <td>${data.name}</td>
-            <td>${data.date}</td>
-            <td>${data.time}</td>
-            <td>${data.isMember ? "Yes" : "No"}</td>
-        </tr>`
-        )
-        .join("");
-};
-
-setInterval(fetchData, 2000);
+// Gọi hàm fetchTable mỗi 2 giây để tự động cập nhật bảng
+setInterval(fetchTable, 2000);
+fetchTable(); // Gọi hàm ngay khi trang được tải
